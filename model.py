@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from abc import ABC, abstractmethod
 
 def weights_init(m):
@@ -101,9 +100,12 @@ class VAEModel(BaseModel):
             encoder_layers.append(nn.Linear(hidden_dim[i], hidden_dim[i + 1]))
             encoder_layers.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_layers)
+        self.encoder.apply(weights_init)
 
         self.fc_mu = nn.Linear(hidden_dim[-1], latent_dim)
         self.fc_logvar = nn.Linear(hidden_dim[-1], latent_dim)
+        self.fc_mu.apply(weights_init)
+        self.fc_logvar.apply(weights_init)
 
         # Decoder
         decoder_layers = []
@@ -114,6 +116,7 @@ class VAEModel(BaseModel):
             decoder_layers.append(nn.ReLU())
         decoder_layers.append(nn.Linear(hidden_dim[0], input_dim))
         self.decoder = nn.Sequential(*decoder_layers)
+        self.decoder.apply(weights_init)
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)

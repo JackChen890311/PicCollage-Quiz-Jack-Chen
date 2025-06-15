@@ -2,8 +2,8 @@ data_path:
   x_pos: data/pi_xs.npy
   y_pos: data/pi_ys.npy
   image: data/sparse_pi_colored.jpg
-  output_samples: output/output_samples.npy
-  output_image: output/output_image.jpg
+  output_samples: output/output_samples_gan.npy
+  output_image: output/output_image_gan.jpg
 model:
   type: "gan"
   input_dim: 5

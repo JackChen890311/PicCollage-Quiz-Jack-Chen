@@ -17,7 +17,7 @@ if __name__ == '__main__':
     os.makedirs('models', exist_ok=True)
     os.makedirs('output', exist_ok=True)
 
-    # Load data
+    # Load data and standardize
     p_loader = PixelDataLoader(
         CONFIG['data_path']['x_pos'], 
         CONFIG['data_path']['y_pos'],
@@ -28,6 +28,7 @@ if __name__ == '__main__':
         split_ratio=CONFIG['hyperparameter']['split_ratio']
     )
 
+    # Initialize model, trainer, optimizers, and load state paths
     if CONFIG['model']['type'] == 'vae':
         model = VAEModel(
             input_dim=CONFIG['model']['input_dim'],
@@ -61,10 +62,8 @@ if __name__ == '__main__':
     # Train Model and load the best state
     if CONFIG['task']['train']:
         print(f'Training {CONFIG["model"]["type"].upper()} model...')
-        trainer.train(model, 
-                    {'train': train_loader, 'test': test_loader}, 
-                    optimizers,
-                    DEVICE, CONFIG['hyperparameter']['epochs'])
+        trainer.train(model, {'train': train_loader, 'test': test_loader}, 
+                      optimizers, DEVICE, CONFIG['hyperparameter']['epochs'])
     if CONFIG['task']['sample']:
         print(f'Sampling from {CONFIG["model"]["type"].upper()} model...')
         model.load_state(load_state_paths)
