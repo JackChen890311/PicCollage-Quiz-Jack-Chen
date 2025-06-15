@@ -54,8 +54,8 @@ if __name__ == '__main__':
             'discriminator': optim.Adam(model.discriminator.parameters(), lr=CONFIG['hyperparameter']['learning_rate_d'])
         }
         load_state_paths = {
-            'generator': 'models/best_generator_final.pth',
-            'discriminator': 'models/best_discriminator_final.pth'
+            'generator': 'models/final_generator.pth',
+            'discriminator': 'models/final_discriminator.pth'
         }
 
 

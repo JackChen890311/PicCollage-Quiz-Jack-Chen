@@ -74,8 +74,8 @@ class GANTrainer(Trainer):
 
             if (epoch + 1) % 10 == 0:
                 print(f'Epoch [{epoch+1}/{epochs}], D Loss: {total_d_loss}, G Loss: {total_g_loss}')
-        torch.save(generator.state_dict(), f'models/best_generator_final.pth')
-        torch.save(discriminator.state_dict(), f'models/best_discriminator_final.pth')
+        torch.save(generator.state_dict(), f'models/final_generator.pth')
+        torch.save(discriminator.state_dict(), f'models/final_discriminator.pth')
 
 
 class VAETrainer(Trainer):
@@ -117,4 +117,4 @@ class VAETrainer(Trainer):
             if (epoch + 1) % 10 == 0:
                 print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(train_loader)}')
         
-        torch.save(model.state_dict(), 'models/best_vae_final.pth')
+        torch.save(model.state_dict(), 'models/final_vae.pth')
