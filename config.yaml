@@ -7,15 +7,18 @@ data_path:
 model:
   type: "gan"
   input_dim: 5
-  latent_dim: 5
-  hidden_dim: [32, 16]
+  latent_dim: 10
+  hidden_dim: [64, 32]
+  dg_ratio: 3
 hyperparameter:
-  learning_rate_g: 0.001
-  learning_rate_d: 0.001
+  learning_rate_g: 0.00005
+  learning_rate_d: 0.0001
   learning_rate_vae: 0.001
-  batch_size: 64
+  beta1: 0.5
+  beta2: 0.999
+  batch_size: 32
   split_ratio: 1
-  epochs: 100
+  epochs: 300
   device: "mps"
   num_samples: 5000
 task:

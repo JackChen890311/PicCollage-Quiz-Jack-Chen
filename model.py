@@ -24,11 +24,12 @@ class BaseModel(nn.Module, ABC):
 
 class GANModel(nn.Module):
     """Base class for GAN models"""
-    def __init__(self, latent_dim, input_dim, hidden_dim):
+    def __init__(self, latent_dim, input_dim, hidden_dim, dg_ratio=5):
         super(GANModel, self).__init__()
         self.latent_dim = latent_dim
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
+        self.dg_ratio = dg_ratio
         self.generator = Generator(latent_dim, input_dim, hidden_dim)
         self.discriminator = Discriminator(input_dim, hidden_dim)
 

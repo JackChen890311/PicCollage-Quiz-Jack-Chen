@@ -46,12 +46,17 @@ if __name__ == '__main__':
         model = GANModel(
             latent_dim=CONFIG['model']['latent_dim'],
             input_dim=CONFIG['model']['input_dim'],
-            hidden_dim=CONFIG['model']['hidden_dim']
+            hidden_dim=CONFIG['model']['hidden_dim'],
+            dg_ratio=CONFIG['model']['dg_ratio']
         )
         trainer = GANTrainer()
         optimizers = {
-            'generator': optim.Adam(model.generator.parameters(), lr=CONFIG['hyperparameter']['learning_rate_g']),
-            'discriminator': optim.Adam(model.discriminator.parameters(), lr=CONFIG['hyperparameter']['learning_rate_d'])
+            'generator': optim.Adam(model.generator.parameters(),
+                                    betas=(CONFIG['hyperparameter']['beta1'], CONFIG['hyperparameter']['beta2']),
+                                    lr=CONFIG['hyperparameter']['learning_rate_g']),
+            'discriminator': optim.Adam(model.discriminator.parameters(),
+                                        betas=(CONFIG['hyperparameter']['beta1'], CONFIG['hyperparameter']['beta2']),
+                                        lr=CONFIG['hyperparameter']['learning_rate_d'])
         }
         load_state_paths = {
             'generator': 'models/final_generator.pth',
