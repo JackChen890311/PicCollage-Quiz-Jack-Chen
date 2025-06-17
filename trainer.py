@@ -49,13 +49,11 @@ class GANTrainer(Trainer):
         model.to(device)
         generator, discriminator = model.generator, model.discriminator
         optimizer_g, optimizer_d = optimizers['generator'], optimizers['discriminator']
-        train_loader = dataloaders['train']
-        valid_loader = dataloaders['valid']
+        train_loader, valid_loader = dataloaders['train'], dataloaders['valid']
         latent_dim_gan = model.latent_dim
         best_loss = float('inf')
         os.makedirs('models', exist_ok=True)
-        train_loss = []
-        valid_loss = []
+        train_loss, valid_loss = [], []
 
         for epoch in tqdm.tqdm(range(epochs)):
             total_d_loss = 0.0
@@ -139,8 +137,7 @@ class VAETrainer(Trainer):
         model.train()
         model.to(device)
         optimizer = optimizers['vae']
-        train_loader = dataloaders['train']
-        valid_loader = dataloaders['valid']
+        train_loader, valid_loader = dataloaders['train'], dataloaders['valid']
         best_loss = float('inf')
         os.makedirs('models', exist_ok=True)
 

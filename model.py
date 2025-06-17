@@ -22,7 +22,7 @@ class BaseModel(nn.Module, ABC):
         pass
 
 
-class GANModel(nn.Module):
+class GANModel(BaseModel):
     """Base class for GAN models"""
     def __init__(self, latent_dim, input_dim, hidden_dim, dg_ratio=5):
         super(GANModel, self).__init__()
