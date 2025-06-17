@@ -30,13 +30,13 @@ class GANTrainer(Trainer):
         fake_loss = self.bce_loss(fake_output, torch.zeros_like(fake_output))
         return real_loss + fake_loss
     
-    def plot_loss(self, train_loss, test_loss, epochs):
+    def plot_loss(self, train_loss, valid_loss, epochs):
         plt.figure(figsize=(10, 5))
         plt.plot(range(1, epochs + 1), [l[0] for l in train_loss], label='D Loss (Train)')
         plt.plot(range(1, epochs + 1), [l[1] for l in train_loss], label='G Loss (Train)')
-        if test_loss is not None:
-            plt.plot(range(1, epochs + 1), [l[0] for l in test_loss], label='D Loss (Test)', linestyle='--')
-            plt.plot(range(1, epochs + 1), [l[1] for l in test_loss], label='G Loss (Test)', linestyle='--')
+        if len(valid_loss) == epochs:
+            plt.plot(range(1, epochs + 1), [l[0] for l in valid_loss], label='D Loss (Valid)', linestyle='--')
+            plt.plot(range(1, epochs + 1), [l[1] for l in valid_loss], label='G Loss (Valid)', linestyle='--')
         plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.title('GAN Training Loss')
@@ -50,12 +50,12 @@ class GANTrainer(Trainer):
         generator, discriminator = model.generator, model.discriminator
         optimizer_g, optimizer_d = optimizers['generator'], optimizers['discriminator']
         train_loader = dataloaders['train']
-        test_loader = dataloaders['test']
+        valid_loader = dataloaders['valid']
         latent_dim_gan = model.latent_dim
         best_loss = float('inf')
         os.makedirs('models', exist_ok=True)
         train_loss = []
-        test_loss = []
+        valid_loss = []
 
         for epoch in tqdm.tqdm(range(epochs)):
             total_d_loss = 0.0
@@ -98,11 +98,11 @@ class GANTrainer(Trainer):
                 torch.save(discriminator.state_dict(), f'models/discriminator_epoch_{epoch+1}.pth')
             train_loss.append((total_d_loss, total_g_loss))
             
-            if test_loader is not None:
+            if valid_loader is not None:
                 total_d_loss = 0.0
                 total_g_loss = 0.0
                 generator.eval()
-                for data in test_loader:
+                for data in valid_loader:
                     data = data.to(device)
                     with torch.no_grad():
                         z = torch.randn(data.size(0), latent_dim_gan, device=device)
@@ -114,13 +114,13 @@ class GANTrainer(Trainer):
                         total_d_loss += d_loss.item()
                         total_g_loss += g_loss.item()
 
-                total_d_loss /= len(test_loader)
-                total_g_loss /= len(test_loader)
+                total_d_loss /= len(valid_loader)
+                total_g_loss /= len(valid_loader)
                 if (epoch + 1) % 10 == 0 or epoch == epochs - 1:
-                    print(f'Epoch [{epoch+1}/{epochs}], D Loss: {total_d_loss}, G Loss: {total_g_loss}')
-                test_loss.append((total_d_loss, total_g_loss))
+                    print(f'Epoch [{epoch+1}/{epochs}], Valid D Loss: {total_d_loss}, Valid G Loss: {total_g_loss}')
+                valid_loss.append((total_d_loss, total_g_loss))
 
-        self.plot_loss(train_loss, test_loss, epochs)
+        self.plot_loss(train_loss, valid_loss, epochs)
         torch.save(generator.state_dict(), f'models/final_generator.pth')
         torch.save(discriminator.state_dict(), f'models/final_discriminator.pth')
 
@@ -140,7 +140,7 @@ class VAETrainer(Trainer):
         model.to(device)
         optimizer = optimizers['vae']
         train_loader = dataloaders['train']
-        test_loader = dataloaders['test']
+        valid_loader = dataloaders['valid']
         best_loss = float('inf')
         os.makedirs('models', exist_ok=True)
 
@@ -164,18 +164,18 @@ class VAETrainer(Trainer):
 
             if (epoch + 1) % 10 == 0:
                 print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss / len(train_loader)}')
-            
-            if test_loader is not None:
+
+            if valid_loader is not None:
                 total_loss = 0.0
                 model.eval()
-                for data in test_loader:
+                for data in valid_loader:
                     data = data.to(device)
                     with torch.no_grad():
                         x_recon, mu, logvar = model(data)
                         loss = self.vae_loss(x_recon, data, mu, logvar)
                         total_loss += loss.item()
-                total_loss /= len(test_loader)
+                total_loss /= len(valid_loader)
                 if (epoch + 1) % 10 == 0 or epoch == epochs - 1:
-                    print(f'Epoch [{epoch+1}/{epochs}], Test Loss: {total_loss / len(test_loader)}')
+                    print(f'Epoch [{epoch+1}/{epochs}], Valid Loss: {total_loss / len(valid_loader)}')
         
         torch.save(model.state_dict(), 'models/final_vae.pth')

@@ -39,11 +39,11 @@ class PixelDataLoader:
             return DataLoader(torch.tensor(self.data, dtype=torch.float32), batch_size=batch_size, shuffle=True), None
         
         train_size = int(split_ratio * len(self.data))
-        test_size = len(self.data) - train_size
+        valid_size = len(self.data) - train_size
 
         self.data = torch.tensor(self.data, dtype=torch.float32)
-        train_data, test_data = torch.split(self.data, [train_size, test_size])
+        train_data, valid_data = torch.split(self.data, [train_size, valid_size])
         train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-        test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+        valid_loader = DataLoader(valid_data, batch_size=batch_size, shuffle=False)
 
-        return train_loader, test_loader
+        return train_loader, valid_loader

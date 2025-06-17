@@ -23,7 +23,7 @@ if __name__ == '__main__':
         CONFIG['data_path']['y_pos'],
         CONFIG['data_path']['image'],)
     p_loader.standardize()
-    train_loader, test_loader = p_loader.get_dataloader(
+    train_loader, valid_loader = p_loader.get_dataloader(
         batch_size=CONFIG['hyperparameter']['batch_size'],
         split_ratio=CONFIG['hyperparameter']['split_ratio']
     )
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # Train Model and load the best state
     if CONFIG['task']['train']:
         print(f'Training {CONFIG["model"]["type"].upper()} model...')
-        trainer.train(model, {'train': train_loader, 'test': test_loader}, 
+        trainer.train(model, {'train': train_loader, 'valid': valid_loader}, 
                       optimizers, DEVICE, CONFIG['hyperparameter']['epochs'])
     if CONFIG['task']['sample']:
         print(f'Sampling from {CONFIG["model"]["type"].upper()} model...')
